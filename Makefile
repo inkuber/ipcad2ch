@@ -13,6 +13,8 @@ PROTOC		?= protoc
 # Directories
 GOBASE      ?= $(shell pwd)
 GOBIN       ?= $(GOBASE)/bin
+GOCMD       ?= $(GOBASE)/cmd
+GOFILES     ?= $(GOCMD)/$(PROJECT)/$(wildcard *.go)
 
 MIGRATIONS_DIR ?= migrations
 
@@ -71,7 +73,7 @@ generate-mocks:     ## generate mock code
 	go generate ./...
 
 build: generate-mocks ## generate mocks and build the go code
-	go build -o $(GOBIN)/$(PROJECT) $(FILES)
+	go build -o $(GOBIN)/$(PROJECT) $(GOFILES)
 
 test: generate-mocks ## generate mock run short tests
 	go test -v ./... -short
