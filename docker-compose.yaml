@@ -1,0 +1,10 @@
+version: "3"
+services:
+  clickhouse:
+    image: 'yandex/clickhouse-server'
+    tmpfs:
+      - /var/lib/clickhouse
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
