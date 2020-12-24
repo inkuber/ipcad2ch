@@ -1,11 +1,18 @@
-buffer: 100
-
 ipcad:
+    # Print input data to stdout for following processing
+    # Example:
+    #   $RSH -l root $IP clear ip accounting > /dev/null
+    #   $RSH -l root $IP show ip accounting checkpoint | ipcad2ch > $FILE 2>/tmp/last_ipcad2ch
     pipe: true
 
 clickhouse:
     host: 'clickhouse'
+    # user: user
+    # password: password
+    # database: database
     port: 9000
+
+    # number of records saving in one insert query
     bunch: 1000000
 
 classifier:
