@@ -6,7 +6,7 @@ Database contains main `details` table that stores all information as is, also t
 
 ## Configuration
 
-Utility by default looks file `ipcad2ch.yaml` in `/etc/, `/usr/local/etc/` and current dir. Also you could point custom config file with `-f <file>` flag.
+Utility by default looks file `ipcad2ch.yaml` in `/etc/`, `/usr/local/etc/` and current dir. Also you could point custom config file with `-f <file>` flag.
 
 ```yaml
 ipcad:
