@@ -2,56 +2,92 @@ package ipcad
 
 import (
 	"bufio"
-	"context"
+	"fmt"
 	"io"
+	"log"
 	"net"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
 type Entry struct {
-	Src     net.IP
-	Dst     net.IP
-	Pkt     uint64
+	SrcIP   net.IP
+	DstIP   net.IP
+	Packets uint64
 	Bytes   uint64
-	SrcPort uint32
-	DstPort uint32
+	SrcPort uint16
+	DstPort uint16
 	Proto   uint8
 	Iface   string
+
+	Collected time.Time
+}
+
+type Config struct {
+	Collected string `yaml:"collected"`
+	Pipe      bool   `yaml:"pipe"`
 }
 
 var (
-	done chan struct{}
-	stop chan struct{}
+	done      chan struct{}
+	stop      chan struct{}
+	collected time.Time
 )
 
-func Read(ctx context.Context, in io.Reader, out chan Entry) error {
+func Read(wg *sync.WaitGroup, cfg Config, in io.Reader, out chan *Entry) {
+	log.Println("Start ipcad read coroutine")
 
+	defer wg.Done()
 	defer close(out)
 
-	scanner := bufio.NewScanner(in)
-	for {
-		select {
-		case <-ctx.Done():
-			return nil
-		default:
-			if scanner.Scan() {
-				entry, ok := parse(scanner.Text())
-				if ok {
-					out <- *entry
-				}
-			} else {
-				if err := scanner.Err(); err != nil {
-					return err
-				} else {
-					return nil
-				}
-			}
+	var err error
+	collected = time.Now()
+	if cfg.Collected != "" {
+		collected, err = time.Parse(time.RFC3339, cfg.Collected)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
+
+	sent := 0
+	index := 0
+	scanner := bufio.NewScanner(in)
+	for {
+		if scanner.Scan() {
+			line := scanner.Text()
+			if line != "" {
+				entry, ok := Parse(line)
+				if ok {
+					out <- entry
+
+					if cfg.Pipe {
+						fmt.Println(line)
+					}
+
+					sent = sent + 1
+				}
+			}
+		} else {
+			if err := scanner.Err(); err != nil {
+				log.Fatal(err)
+			} else {
+				break
+			}
+		}
+
+		if index%100000 == 0 {
+			log.Println(fmt.Sprintf("Reading ipcad %d", index))
+		}
+
+		index = index + 1
+	}
+
+	log.Println(fmt.Sprintf("Sended %d, total %d rows", sent, index))
 }
 
-func parse(line string) (*Entry, bool) {
+func Parse(line string) (*Entry, bool) {
 	fields := strings.Fields(line)
 
 	if len(fields) == 8 {
@@ -90,14 +126,15 @@ func parse(line string) (*Entry, bool) {
 		iface := fields[7]
 
 		return &Entry{
-			Src:     srcIP,
-			Dst:     dstIP,
-			Pkt:     uint64(pkt),
-			Bytes:   uint64(bytes),
-			SrcPort: uint32(srcPort),
-			DstPort: uint32(dstPort),
-			Proto:   uint8(proto),
-			Iface:   iface,
+			SrcIP:     srcIP,
+			DstIP:     dstIP,
+			Packets:   uint64(pkt),
+			Bytes:     uint64(bytes),
+			SrcPort:   uint16(srcPort),
+			DstPort:   uint16(dstPort),
+			Proto:     uint8(proto),
+			Iface:     iface,
+			Collected: collected,
 		}, true
 	}
 

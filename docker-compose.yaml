@@ -4,7 +4,14 @@ services:
     image: 'yandex/clickhouse-server'
     tmpfs:
       - /var/lib/clickhouse
-    ulimits:
-      nofile:
-        soft: 262144
-        hard: 262144
+
+  nginx:
+    image: 'nginx'
+    volumes:
+      - "./examples/classifier:/usr/share/nginx/html"
+      - "./examples/classifier/mime.types:/etc/nginx/mime.types"
+
+  ipcad2ch:
+    build: .
+    volumes:
+      - ".:/go/src/github.com/inkuber/ipcad2ch"

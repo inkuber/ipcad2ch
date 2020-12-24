@@ -1,0 +1,47 @@
+buffer: 100
+
+ipcad:
+    pipe: true
+
+clickhouse:
+    host: 'clickhouse'
+    port: 9000
+    bunch: 1000000
+
+classifier:
+    users:
+        # Fetch users from url, allowed formats: csv json
+        #
+        fetch:
+          # url: http://nginx/users.csv
+          file: examples/classifier/users.csv
+
+          # Field separator for CSV
+          # Comma: ";"
+
+          # Field positions for CSV
+          # IDField: 0
+          # CIDRField: 1
+
+        # Users could be set manually
+        users:
+           "1": "188.218.189.188/32"
+
+    networks:
+        # Fetch networks from url, allowed formats: csv json
+        fetch:
+          url: http://nginx/networks.csv
+
+          # Field separator for CSV
+          # Comma: ";"
+
+          # Field positions for CSV
+          # cidrField: 0
+          #
+          # Could be "local" or "peering"
+          # classField: 1
+
+        # Networks could be set manually
+        networks:
+           "188.218.0.0/16": "local"
+           "103.203.0.0/16": "peering"
