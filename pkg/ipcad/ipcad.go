@@ -136,6 +136,55 @@ func Parse(line string) (*Entry, bool) {
 			Iface:     iface,
 			Collected: collected,
 		}, true
+	} else if len(fields) == 10 {
+		//TODO remove this block after loading archive
+
+		collected, err := time.Parse("2006-01-02 15:04:05", fields[0]+" "+fields[1])
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		srcIP := net.ParseIP(fields[2])
+		dstIP := net.ParseIP(fields[3])
+
+		pkt, err := strconv.Atoi(fields[4])
+		if err != nil {
+			return nil, false
+		}
+
+		bytes, err := strconv.Atoi(fields[5])
+		if err != nil {
+			return nil, false
+		}
+
+		srcPort, err := strconv.Atoi(fields[6])
+		if err != nil {
+			return nil, false
+		}
+
+		dstPort, err := strconv.Atoi(fields[7])
+		if err != nil {
+			return nil, false
+		}
+
+		proto, err := strconv.Atoi(fields[8])
+		if err != nil {
+			return nil, false
+		}
+
+		iface := fields[9]
+
+		return &Entry{
+			SrcIP:     srcIP,
+			DstIP:     dstIP,
+			Packets:   uint64(pkt),
+			Bytes:     uint64(bytes),
+			SrcPort:   uint16(srcPort),
+			DstPort:   uint16(dstPort),
+			Proto:     uint8(proto),
+			Iface:     iface,
+			Collected: collected,
+		}, true
 	}
 
 	return nil, false

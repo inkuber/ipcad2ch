@@ -29,7 +29,7 @@ Config {
       CIDRField: CIDR field index for csv
       Comma: Field delimiter
     }
-    Users: users hash map id => ip
+    Users: users hash map ip => id
   }
   Networks: {
     Fetch {
@@ -160,7 +160,7 @@ func NewClassifier(cfg Config) Classifier {
 		c.readNetworks()
 	}
 
-	for id, ip := range cfg.Users.Users {
+	for ip, id := range cfg.Users.Users {
 		netIP := net.ParseIP(ip)
 		if netIP == nil {
 			log.Printf(fmt.Sprintf("Could not parse ip %s for user %s, skipping", ip, id))
@@ -292,8 +292,8 @@ func (c *Classifier) parseJSONUsers(body string) {
 	}
 
 	parsed := 0
-	for id, cidr := range result {
-		c.Config.Users.Users[id] = cidr
+	for cidr, id := range result {
+		c.Config.Users.Users[cidr] = id
 		parsed = parsed + 1
 	}
 
@@ -317,7 +317,7 @@ func (c *Classifier) parseCSVUsers(body string) {
 		id := record[c.Config.Users.Fetch.IDField]
 		cidr := record[c.Config.Users.Fetch.CIDRField]
 
-		c.Config.Users.Users[id] = cidr
+		c.Config.Users.Users[cidr] = id
 		parsed = parsed + 1
 	}
 

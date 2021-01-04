@@ -14,8 +14,8 @@ func TestShouldClassifyLocalEntry(t *testing.T) {
 	cfg := Config{}
 
 	cfg.Users.Users = make(map[string]string)
-	cfg.Users.Users["1"] = "192.168.0.1"
-	cfg.Users.Users["2"] = "192.168.0.2"
+	cfg.Users.Users["192.168.0.1"] = "1"
+	cfg.Users.Users["192.168.0.2"] = "2"
 
 	cfg.Networks.Networks = make(map[string]string)
 	cfg.Networks.Networks["192.168.0.0/16"] = "local"
@@ -45,7 +45,7 @@ func TestShouldClassifyPeeringEntry(t *testing.T) {
 	cfg := Config{}
 
 	cfg.Users.Users = make(map[string]string)
-	cfg.Users.Users["1"] = "192.168.0.1"
+	cfg.Users.Users["192.168.0.1"] = "1"
 
 	cfg.Networks.Networks = make(map[string]string)
 	cfg.Networks.Networks["192.168.0.0/16"] = "local"
@@ -76,7 +76,7 @@ func TestShouldClassifyInternetEntry(t *testing.T) {
 	cfg := Config{}
 
 	cfg.Users.Users = make(map[string]string)
-	cfg.Users.Users["1"] = "192.168.0.1"
+	cfg.Users.Users["192.168.0.1"] = "1"
 
 	cfg.Networks.Networks = make(map[string]string)
 	cfg.Networks.Networks["192.168.0.0/16"] = "local"
@@ -106,7 +106,7 @@ func TestShouldClassifyDirectionEntry(t *testing.T) {
 	cfg := Config{}
 
 	cfg.Users.Users = make(map[string]string)
-	cfg.Users.Users["1"] = "192.168.0.1"
+	cfg.Users.Users["192.168.0.1"] = "1"
 
 	cfg.Networks.Networks = make(map[string]string)
 	cfg.Networks.Networks["192.168.0.0/16"] = "local"
