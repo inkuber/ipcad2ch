@@ -43,7 +43,7 @@ classifier:
 
         # Users could be set manually
         users:
-           "1": "188.218.189.188/32"
+           "188.218.189.188/32": "1"
 
     networks:
         # Fetch networks from url, allowed formats: csv json
